@@ -2,97 +2,72 @@ import React, { useState } from 'react';
 import NavBar from '../components/Navbar/NavBar';
 import Footer from '../components/Footer';
 import { useDocTitle } from '../components/CustomHook';
-import axios from 'axios';
-import Notiflix from 'notiflix';
 
 const JoinUs = (props) => {
 
     useDocTitle('InvestNest')
 
     const [firstName, setFirstName] = useState('')
+    const [middleName, setMiddleName] = useState('')
     const [lastName, setLastName] = useState('')
-    const [email, setEmail] = useState('')
     const [phone, setPhone] = useState('')
     const [message, setMessage] = useState('')
-    const [demoProducts, setDemoProducts] = useState([])
+    const [role, setRole] = useState('')
     const [errors, setErrors] = useState([])
-
 
     const handleChange = (e) => {
         const value = e.target.value
         const checked = e.target.checked
         errors.products = []
         if (checked) {
-            setDemoProducts([
-                ...demoProducts, value
-            ])
+            setRole(value)
         } else {
-            setDemoProducts(demoProducts.filter((e) => (e !== value)))
+            setRole('')
         }
-
     }
+
     const clearErrors = () => {
         setErrors([])
     }
 
     const clearInput = () => {
         setFirstName('')
+        setMiddleName('')
         setLastName('')
-        setEmail('')
         setPhone('')
         setMessage('')
+        setRole('')
     }
 
     function sendEmail(e) {
         e.preventDefault();
+        clearErrors();
+
+        // Validate phone number
+        if (phone.length !== 10) {
+            setErrors(prevErrors => ({ ...prevErrors, phone_number: 'Phone number must be 10 digits.' }));
+            return;
+        }
+
+        // Validate role
+        if (!role) {
+            setErrors(prevErrors => ({ ...prevErrors, role: 'Please select either Investor or Founder.' }));
+            return;
+        }
+
         document.getElementById('submitBtn').disabled = true;
         document.getElementById('submitBtn').innerHTML = 'Loading...';
-        let fData = new FormData();
-        fData.append('first_name', firstName)
-        fData.append('last_name', lastName)
-        fData.append('email', email)
-        fData.append('phone_number', phone)
-        fData.append('message', message)
-        fData.append('products', demoProducts)
 
+        const mailtoLink = `mailto:lakshmieluri7013@gmail.com?subject=New Registration&body=First Name: ${firstName}%0D%0AMiddle Name: ${middleName}%0D%0ALast Name: ${lastName}%0D%0ARole: ${role}%0D%0APhone: ${phone}%0D%0AMessage: ${message}`;
+        window.location.href = mailtoLink;
 
-        axios({
-            method: "post",
-            url: process.env.REACT_APP_DEMO_REQUEST_API,
-            data: fData,
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        })
-            .then(function (response) {
-                document.getElementById('submitBtn').disabled = false;
-                document.getElementById('submitBtn').innerHTML = 'Send Message';
-                clearInput()
-                //handle success
-                Notiflix.Report.success(
-                    'Success',
-                    response.data.message,
-                    'Okay',
-                );
-            })
-            .catch(function (error) {
-                document.getElementById('submitBtn').disabled = false;
-                document.getElementById('submitBtn').innerHTML = 'Send Message';
-                //handle error
-                const { response } = error;
-                if (response.status === 500) {
-                    Notiflix.Report.failure(
-                        'An error occurred',
-                        response.data.message,
-                        'Okay',
-                    );
-                }
-                if (response.data.errors !== null) {
-                    setErrors(response.data.errors)
-                }
-
-            });
+        setTimeout(() => {
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').innerHTML = 'Send Message';
+            clearInput();
+        }, 3000);
     }
+
     return (
         <>
             <div>
@@ -111,7 +86,7 @@ const JoinUs = (props) => {
                                     aria-describedby="checkbox-founder"
                                     type="checkbox"
                                     className="bg-gray-50 border-gray-300 focus:ring-3 focus:ring-blue-300 h-4 w-4 rounded"
-                                    value="founder" onChange={handleChange}
+                                    value="Founder" onChange={handleChange}
                                 />
                                 <label htmlFor="checkbox-founder" className="ml-3 text-lg font-medium text-gray-900">Founder</label>
                             </div>
@@ -121,12 +96,12 @@ const JoinUs = (props) => {
                                     aria-describedby="checkbox-investor"
                                     type="checkbox"
                                     className="bg-gray-50 border-gray-300 focus:ring-3 focus:ring-blue-300 h-4 w-4 rounded"
-                                    value="investor" onChange={handleChange}
+                                    value="Investor" onChange={handleChange}
                                 />
                                 <label htmlFor="checkbox-investor" className="ml-3 text-lg font-medium text-gray-900">Investor</label>
                             </div>
-                            {errors && errors.products &&
-                                <p className="text-red-500 text-sm">{errors.products}</p>
+                            {errors && errors.role &&
+                                <p className="text-red-500 text-sm">{errors.role}</p>
                             }
 
                             <div className="grid grid-cols-1 gap-5 md:grid-cols-2 mt-5">
@@ -144,7 +119,20 @@ const JoinUs = (props) => {
                                         <p className="text-red-500 text-sm">{errors.first_name}</p>
                                     }
                                 </div>
-
+                                <div>
+                                    <input
+                                        name="middle_name"
+                                        className="w-full bg-gray-100 text-gray-900 mt-2 p-3 rounded-lg focus:outline-none focus:shadow-outline"
+                                        type="text"
+                                        placeholder="Middle Name"
+                                        value={middleName}
+                                        onChange={(e) => setMiddleName(e.target.value)}
+                                        onKeyUp={clearErrors}
+                                    />
+                                    {errors && errors.middle_name &&
+                                        <p className="text-red-500 text-sm">{errors.middle_name}</p>
+                                    }
+                                </div>
                                 <div>
                                     <input
                                         name="last_name"
@@ -159,22 +147,6 @@ const JoinUs = (props) => {
                                         <p className="text-red-500 text-sm">{errors.last_name}</p>
                                     }
                                 </div>
-
-                                <div>
-                                    <input
-                                        name="email"
-                                        className="w-full bg-gray-100 text-gray-900 mt-2 p-3 rounded-lg focus:outline-none focus:shadow-outline"
-                                        type="email"
-                                        placeholder="Email*"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        onKeyUp={clearErrors}
-                                    />
-                                    {errors && errors.email &&
-                                        <p className="text-red-500 text-sm">{errors.email}</p>
-                                    }
-                                </div>
-
                                 <div>
                                     <input
                                         name="phone_number"
@@ -204,7 +176,7 @@ const JoinUs = (props) => {
                                 }
                             </div>
                             <div className="my-2 w-1/2 lg:w-2/4">
-                                <button type="submit" id="submitBtn" className="uppercase text-sm font-bold tracking-wide bg-gray-500 hover:bg-blue-900 text-gray-100 p-3 rounded-lg w-full 
+                                <button type="submit" id="submitBtn" className="uppercase text-sm font-bold tracking-wide bg-blue-900 hover:bg-blue-700 text-gray-100 p-3 rounded-lg w-full 
                                     focus:outline-none focus:shadow-outline">
                                     Send Message
                                 </button>
@@ -219,6 +191,7 @@ const JoinUs = (props) => {
                                 </div>
                                 <div className="flex flex-col">
                                     <h2 className="text-2xl">Office Address</h2>
+                                    <p className="text-gray-400">Jubilee Hills</p>
                                     <p className="text-gray-400">Hyderabad, Telangana</p>
                                 </div>
                             </div>
@@ -234,7 +207,7 @@ const JoinUs = (props) => {
 
                                     <div className='mt-5'>
                                         <h2 className="text-2xl">Send an E-mail</h2>
-                                        <p className="text-gray-400">elurisreelakshmi04@gmail.com</p>
+                                        <p className="text-gray-400">lakshmieluri7013@gmail.com</p>
                                     </div>
 
                                 </div>

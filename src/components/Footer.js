@@ -5,7 +5,7 @@ import { HashLink } from 'react-router-hash-link';
 const Footer = () => {
     return (
         <>
-            <footer>
+            <footer id="footer"> {/* Add ID here */}
                 <div className="footer max-w-full mx-auto px-4 sm:px-6 bg-gray-100 border-t border-b py-30">
                     {/* Top area: Blocks */}
                     <div className="grid sm:grid-cols-12 gap-5 py-8 md:py-12 border-t border-gray-200 lg:ml-11">

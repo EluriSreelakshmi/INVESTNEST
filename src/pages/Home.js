@@ -5,6 +5,7 @@ import Hero from '../components/Hero';
 import Intro from '../components/Intro';
 import Founders from '../components/founders';
 import Blogs from '../components/Blogs';
+import Subscribe from '../components/Subscribe';
 
 
 const Home = () => {
@@ -13,6 +14,7 @@ const Home = () => {
             <Hero />
             <Intro />
             <Blogs />
+            <Subscribe/>
             <Founders/>
             <Investors />
             <Footer />

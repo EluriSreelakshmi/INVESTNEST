@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import AOS from 'aos';
 import "aos/dist/aos.css";
 import './index.css';
@@ -9,13 +9,15 @@ import {
 } from 'react-router-dom';
 // All pages
 import Home from './pages/Home';
-import Contact from './pages/Contact';
-import Joinus from './pages/Joinus';
-
-import {useDocTitle} from './components/CustomHook';
+import JoinUs from './pages/JoinUs';
+import Login from './pages/Login';
+import { useDocTitle } from './components/CustomHook';
 import ScrollToTop from './components/ScrollToTop';
+import NavBar from './components/Navbar/NavBar';
 
 function App() {
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
     const aos_init = () => {
       AOS.init({
@@ -36,16 +38,16 @@ function App() {
     <>
       <Router>
         <ScrollToTop>
+          <NavBar user={user} setUser={setUser} />
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/join-us" element={<Joinus />} /> 
+            <Route path="/join-us" element={<JoinUs />} />
+            <Route path="/login" element={<Login setUser={setUser} />} />
           </Routes>
         </ScrollToTop>
       </Router>
     </>
   );
 }
-
 
 export default App;

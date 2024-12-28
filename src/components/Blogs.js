@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 
 const Blogs = () => {
     const [showMore, setShowMore] = useState(false);
-    const [blogsToShow, setBlogsToShow] = useState(4); // Initially show 4 blogs
+    const [blogsToShow, setBlogsToShow] = useState(4); 
 
     const toggleShowMore = () => {
         setShowMore(!showMore);
-        setBlogsToShow(showMore ? 4 : blogsToShow + 4); // Show 4 more blogs if not showing more, otherwise keep the same number
+        setBlogsToShow(showMore ? 4 : blogsToShow + 4); 
     };
 
     const blogs = [
